@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Información del usuario, créditos y estado PRO.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "ID único del usuario de Firebase Auth." },
+        "email": { "type": "string", "format": "email", "description": "Correo electrónico del usuario." },
+        "displayName": { "type": "string", "description": "Nombre visible del usuario." },
+        "photoURL": { "type": "string", "description": "URL de la foto de perfil." },
+        "credits": { "type": "integer", "description": "Número de créditos de búsqueda restantes." },
+        "isPro": { "type": "boolean", "description": "Indica si el usuario tiene el plan PRO activo." },
+        "role": { "type": "string", "enum": ["admin", "user"], "description": "Rol del usuario en la plataforma." },
+        "dailySearchCount": { "type": "integer", "description": "Número de búsquedas realizadas hoy." },
+        "lastSearchDate": { "type": "string", "format": "date", "description": "Fecha de la última búsqueda realizada." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Fecha de creación de la cuenta." }
+      },
+      "required": ["uid", "email", "credits", "isPro"]
+    },
+    "Search": {
+      "title": "Search",
+      "description": "Historial de búsquedas realizadas por el usuario.",
+      "type": "object",
+      "properties": {
+        "niche": { "type": "string", "description": "Nicho buscado." },
+        "budget": { "type": "string", "description": "Presupuesto seleccionado." },
+        "result": { "type": "string", "description": "Resultado de la búsqueda (Markdown)." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Fecha y hora de la búsqueda." }
+      },
+      "required": ["niche", "budget", "result", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Colección de perfiles de usuario."
+    },
+    "/users/{userId}/searches/{searchId}": {
+      "schema": "Search",
+      "description": "Historial de búsquedas del usuario."
+    }
+  }
+}

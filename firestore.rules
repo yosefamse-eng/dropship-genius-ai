@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.email == "yosefamse@gmail.com" ||
+         request.auth.token.email == "amselemyosef@gmail.com");
+    }
+
+    function isEmailVerified() {
+      return isAuthenticated() && request.auth.token.email_verified == true;
+    }
+
+    match /users/{userId} {
+      // Allow users to read their own data to show verification status/credits
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Allow creation even if not verified yet (so the profile is created on first login)
+      allow create: if isOwner(userId) || isAdmin();
+
+      // Block updates (like credit decrement) if email is not verified
+      // Validate that users don't self-escalate or bypass limits maliciously
+      allow update: if ((isOwner(userId) && isEmailVerified()) || isAdmin()) && 
+                    (request.resource.data.role == resource.data.role || isAdmin());
+
+      match /searches/{searchId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    match /{path=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

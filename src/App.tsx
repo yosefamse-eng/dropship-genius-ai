@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
- * Version: 1.0.1
+ * Version: 1.0.2
  */
 
 import React, { useState, useEffect } from 'react';
